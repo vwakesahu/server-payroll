@@ -39,11 +39,11 @@ const toHexString = (bytes) => {
 const BASE_SEPOLIA_PROVIDER_URL = process.env.BASE_SEPOLIA_PROVIDER_URL;
 const BASE_SEPOLIA_PRIVATE_KEY = process.env.BASE_SEPOLIA_PRIVATE_KEY;
 const BASE_SEPOLIA_CONTRACT_ADDRESS =
-  "0xe05996cDC331c3b69667D64812B79C3cC873Ecfe";
+  "0x30BCcFc0e7348Df268307AfFEfe082184aDc53F5";
 
 const INCO_PROVIDER_URL = process.env.INCO_PROVIDER_URL;
 const INCO_PRIVATE_KEY = process.env.INCO_PRIVATE_KEY;
-const INCO_CONTRACT_ADDRESS = "0x397c2554eABC3dCc705eC2abD874753d090e6D52";
+const INCO_CONTRACT_ADDRESS = "0x85b928AFa373471e631E5e66304777A9478d117a";
 
 const incoDomainId = 21097;
 const baseSepoliaDomainId = 1320;
@@ -235,10 +235,12 @@ async function callHandleOnBaseSepolia(
       BASE_SEPOLIA_ABI,
       baseSepoliaWallet
     );
+    console.log('calling callhandle sepolia')
     const tx = await contractToCall.handle(21097, sender, message, {
-      gasLimit: 7000000, // Adjust gas limit as needed
+      gasLimit: 7000000,
     });
     await tx.wait();
+    console.log('handle function called on Base Sepolia with tx: ', tx.hash);
   } catch (error) {
     console.error("Error calling handle function on Base Sepolia:", error);
   }
@@ -420,10 +422,13 @@ async function settleDispatchWithdrawOfFunds(user) {
       balance = balanceResult;
     }
     const message = await contractToCall.returnMessage(
-      BASE_SEPOLIA_CONTRACT_ADDRESS,
+      user,
       ethers.parseEther(balance.toString())
     );
+
+    console.log(ethers.parseEther(balance.toString()));
     console.log(balance);
+    console.log('message: ',message);
     const tx = await contractToCall.withdrawFunds(user, balance, {
       gasLimit: 7000000,
     });
@@ -432,6 +437,8 @@ async function settleDispatchWithdrawOfFunds(user) {
     const addressToBytes32 = await contractToCall.addressToBytes32(
       INCO_CONTRACT_ADDRESS
     );
+
+    console.log('addressToByte32: ',addressToBytes32)
 
     await callHandleOnBaseSepolia(
       21097,
